@@ -15,9 +15,9 @@ Depends: vplane-config (>= 1.1-1), vplane-config-npf (>= 0.4.0),
 	 libvyatta-interface-perl, libvyatta-file-perl, libvyatta-rate-perl,
 	 libvyatta-dscp-perl, libconfig-tiny-perl, vyatta-cfg,
 	 libjson-perl, configd (>= 1.6) | configd-trial (>= 1.6),
-	 vyatta-dataplane-op-qos-9, vyatta-dataplane-cfg-qos-16,
-	 vyatta-dataplane-op-gpc-1, python3 (>= 3.6), python3-tabulate,
+	 python3 (>= 3.6), python3-tabulate,
          ${misc:Depends}, ${perl:Depends}
+Recommends: vyatta-dataplane-op-qos-9, vyatta-dataplane-cfg-qos-16, vyatta-dataplane-op-gpc-1
 Description: vyatta dataplane QoS templates
  Vyatta configuration/operational commands for Quality Of Service
  on dataplane.
