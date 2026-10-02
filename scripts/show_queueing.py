@@ -89,8 +89,9 @@ def extract_drop_summary_data(qos_data: Dict) -> List[DropSummaryTableRow]:
                 for subport in subports:
                     for tc in subport['tc']:
                         row.packet_data["queued_packets"] += tc['packets']
-                        row.packet_data["dropped_packets"] += tc['dropped'] + \
-                            tc['random_drop']
+                        # The dataplane's dropped counter is the total of tail
+                        # and random drops; random_drop is a subset of it.
+                        row.packet_data["dropped_packets"] += tc['dropped']
             else:
                 raise NoSubports
         except (KeyError, NoSubports):
@@ -104,8 +105,12 @@ def extract_drop_summary_data(qos_data: Dict) -> List[DropSummaryTableRow]:
 
             total.packet_data["queued_packets"] += row.packet_data["queued_packets"]
             total.packet_data["dropped_packets"] += row.packet_data["dropped_packets"]
-            total.packet_data["dropped_percentage"] += row.packet_data["dropped_percentage"]
         table_data.append(row)
+
+    if total.packet_data["queued_packets"] > 0:
+        total.packet_data["dropped_percentage"] = (
+            total.packet_data["dropped_packets"] /
+            total.packet_data["queued_packets"] * 100)
 
     table_data.append(total)
 

@@ -68,10 +68,10 @@ def test_show_drop_summary():
     assert next(row0) == "Total"                            # Interface Name
     # Queued Packets = 2200 + 1120
     assert next(row0) == 3320
-    # Dropped Packets = 340 + 250 + 90
-    assert next(row0) == 340
+    # The dataplane's dropped counter already includes random drops.
+    assert next(row0) == 240
     # Dropped Percentage = (Dropped Packets / Queued Packets) * 100
-    assert next(row0) == pytest.approx(19.399, 0.0001)
+    assert next(row0) == pytest.approx(7.2289, 0.0001)
 
     row3 = iter(table_data[3])
     assert next(row3) == "dp0s8"

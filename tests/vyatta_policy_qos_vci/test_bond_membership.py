@@ -15,8 +15,8 @@ from unittest.mock import MagicMock, patch
 from vyatta_policy_qos_vci.bond_membership import BondMembership
 
 
-@patch('vyatta_policy_qos_vci.bond_membership.subprocess.check_output')
-def test_fetch_bond_groups(mock_check_output):
+@patch('vyatta_policy_qos_vci.bond_membership.os.listdir')
+def test_fetch_bond_groups(mock_listdir):
     """
     Tests that _fetch_bond_groups() method can properly retrieve a list of
     bonding groups from the kernel.
@@ -28,23 +28,13 @@ def test_fetch_bond_groups(mock_check_output):
 
     # Configure the output of the mocked kernel. This is the mocked output for
     # 'ls -1 /sys/class/net'.
-    mock_check_output.return_value = b'bp0p0\nbp0p1\ndp0bond1\ndp0bond2\n\
-        dp0ce0\ndp0ce1\ndp0p7s0\ndp0xe0\ndp0xe1\ndp0xe10\ndp0xe11\ndp0xe12\n\
-        dp0xe13\ndp0xe14\ndp0xe15\ndp0xe16\ndp0xe17\ndp0xe18\ndp0xe19\ndp0xe2\n\
-        dp0xe20\ndp0xe21\ndp0xe22\ndp0xe23\ndp0xe24\ndp0xe25\ndp0xe26\n\
-        dp0xe27\ndp0xe3\ndp0xe4\ndp0xe5\ndp0xe6\ndp0xe7\ndp0xe8\ndp0xe9\n\
-        enp0s20u4u2c2\nlo\nsw0\nsw0.10\nsw0.30\n'
+    mock_listdir.return_value = ['dp0bond1', 'dp0bond1.10', 'dp0bond2', 'lo']
 
     assert membership._fetch_bond_groups() == ['dp0bond1', 'dp0bond2']
 
     # No bonding groups:
 
-    mock_check_output.return_value = b'bp0p0\nbp0p1\n\
-        dp0ce0\ndp0ce1\ndp0p7s0\ndp0xe0\ndp0xe1\ndp0xe10\ndp0xe11\ndp0xe12\n\
-        dp0xe13\ndp0xe14\ndp0xe15\ndp0xe16\ndp0xe17\ndp0xe18\ndp0xe19\ndp0xe2\n\
-        dp0xe20\ndp0xe21\ndp0xe22\ndp0xe23\ndp0xe24\ndp0xe25\ndp0xe26\n\
-        dp0xe27\ndp0xe3\ndp0xe4\ndp0xe5\ndp0xe6\ndp0xe7\ndp0xe8\ndp0xe9\n\
-        enp0s20u4u2c2\nlo\nsw0\nsw0.10\nsw0.30\n'
+    mock_listdir.return_value = ['dp0p1s0', 'lo']
 
     assert membership._fetch_bond_groups() == []
 

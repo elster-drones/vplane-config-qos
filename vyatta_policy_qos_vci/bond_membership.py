@@ -13,6 +13,8 @@ system's LAG membership state.
 import logging
 import subprocess
 import json
+import os
+import re
 
 LOG = logging.getLogger('Policy QoS VCI')
 
@@ -59,12 +61,11 @@ class BondMembership:
 
     def _fetch_bond_groups(self):
         """ Fetches from the kernel the list of bonding groups """
-        shell_output = subprocess.check_output(['ls', '-1', '/sys/class/net/'])
-        interfaces = shell_output.decode('ascii').split('\n')
+        interfaces = os.listdir('/sys/class/net/')
         LOG.debug(f"kernel interfaces: {interfaces}")
         bond_groups = []
         for interface in interfaces:
-            if 'bond' in interface:
+            if re.fullmatch(r'dp\d+bond\d+', interface):
                 bond_groups.append(interface)
         return bond_groups
 
